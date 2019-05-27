@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { of, Observable } from 'rxjs';
 
-declare type StockValue = 'high' | 'low' | 'close' | 'open';
+export declare type PriceType = 'high' | 'low' | 'close' | 'open';
 
 export interface IStockItem {
   date: Date;
@@ -35,10 +35,12 @@ export class ApiService {
     close: '4. close'
   };
 
+  private cache: { [key: string]: IStockItem[] } = {};
+
   constructor(private http: HttpClient) { }
 
-  public getValues(): Observable<StockValue[]> {
-    return of<StockValue[]>(['open', 'close', 'high', 'low']);
+  public getPriceTypes(): Promise<PriceType[]> {
+    return Promise.resolve<PriceType[]>(['open', 'close', 'high', 'low']);
   }
 
   public getCompanies(): Promise<ICompany[]> {
@@ -51,19 +53,30 @@ export class ApiService {
     ]);
   }
 
-  public getStockData(symbol: string, value: StockValue): Observable<IStockItem[]> {
+  public getStockData(symbol: string, value: PriceType): Observable<IStockItem[]> {
     const url = this.baseUrl +
       '&symbol=' + symbol;
+
+    // using cache mainly because the API only allows 5 requests per minute which is highly annoying
+    const key = symbol + '_' + value;
+    const cachedData = this.cache[key];
+    if (cachedData) {
+      return of(cachedData);
+    }
+
+    // no cache - get from server
     return this.http.get(url)
       .pipe(
         map(res => {
-          return Object.keys(res[this.dataKey])
+          const data = Object.keys(res[this.dataKey])
             .map(k => {
               return {
                 date: new Date(k),
                 value: +res[this.dataKey][k][this.valueKeys[value]]
               };
             });
+          this.cache[key] = data;
+          return data;
         })
       );
   }

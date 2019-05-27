@@ -1,7 +1,7 @@
-import { Component, ChangeDetectorRef, AfterViewInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Subject, Observable, forkJoin } from 'rxjs';
 import { debounceTime, map, concatMap } from 'rxjs/operators';
-import { ApiService, IStockData, ICompany } from './api.service';
+import { ApiService, IStockData, ICompany, PriceType } from './api.service';
 
 interface ISelectedCompany extends ICompany {
   selected?: boolean;
@@ -24,6 +24,8 @@ export class AppComponent {
   public threshold$: Observable<number>;
 
   public companies: ISelectedCompany[];
+  public priceTypes: PriceType[];
+  public selectedPriceType: PriceType;
 
   public series: IStockData[];
 
@@ -35,7 +37,7 @@ export class AppComponent {
     this.dataRequest$.next();
   }
 
-  public updateThreshold(value) {
+  public updateThreshold(value: number) {
     this.rawThreshold$.next(value);
   }
 
@@ -43,16 +45,26 @@ export class AppComponent {
     this.initThresholdObservable();
     this.initCompaniesObservable();
     this.initDataObservable();
+
+    Promise.all([this.initCompaniesObservable(), this.initPriceTypes()])
+      .then(() => {
+        this.companies[0].selected = true;
+        this.selectedPriceType = this.priceTypes[0];
+        this.triggerUpdate();
+      });
   }
 
   private initCompaniesObservable() {
-    this.apiService.getCompanies()
+    return this.apiService.getCompanies()
       .then(res => {
         this.companies = res;
-        this.companies[0].selected = true;
-        this.companies[1].selected = true;
+      });
+  }
 
-        this.triggerUpdate();
+  private initPriceTypes() {
+    return this.apiService.getPriceTypes()
+      .then(res => {
+        this.priceTypes = res;
       });
   }
 
@@ -61,36 +73,35 @@ export class AppComponent {
       concatMap(() => {
         const arr = this.companies.filter(x => x.selected).map(x => x.symbol);
         const requests = arr.map(x => {
-          return this.apiService.getStockData(x, 'close');
+          return this.apiService.getStockData(x, this.selectedPriceType);
         });
         return forkJoin(requests);
       }));
 
-    obs
-      .pipe(map(x => {
-        return this.companies
-          .filter(c => c.selected)
-          .map((d, i) => {
-            return {
-              symbol: d.symbol,
-              data: x[i]
-            };
-          });
-      })).subscribe(data => {
-        this.series = data;
+    obs.pipe(map(x => {
+      return this.companies
+        .filter(c => c.selected)
+        .map((d, i) => {
+          return {
+            symbol: d.symbol,
+            data: x[i]
+          };
+        });
+    })).subscribe(data => {
+      this.series = data;
 
-        this.setValues();
-        this.setStep();
-        this.updateThreshold((this.maxValue - this.minValue) / 2);
-      });
-  }
-
-  private initThresholdObservable() {
-    this.threshold$ = this.rawThreshold$.pipe(debounceTime(200));
+      this.setValues();
+    });
   }
 
   private setValues() {
     this.setMinAndMaxValues();
+    this.setStep();
+    this.updateThreshold(this.minValue + (this.maxValue - this.minValue) / 2);
+  }
+
+  private initThresholdObservable() {
+    this.threshold$ = this.rawThreshold$.pipe(debounceTime(200));
   }
 
   private setStep() {

@@ -7,7 +7,7 @@ import { ChartComponent } from './chart/chart.component';
 import { HighchartsChartModule } from 'highcharts-angular';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { MatSliderModule, MatRadioModule, MatCheckboxModule } from '@angular/material';
+import { MatSliderModule, MatRadioModule, MatCheckboxModule, MatFormFieldModule, MatSelectModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
@@ -25,7 +25,9 @@ import { FormsModule } from '@angular/forms';
     HighchartsChartModule,
     BrowserAnimationsModule,
     MatSliderModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatFormFieldModule,
+    MatSelectModule
   ],
   providers: [],
   bootstrap: [AppComponent]

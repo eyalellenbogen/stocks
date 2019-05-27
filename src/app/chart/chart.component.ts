@@ -1,6 +1,8 @@
-import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import * as highcharts from 'highcharts';
 import { IStockData } from '../api.service';
+import { Subscription, Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 export interface IChartInfo {
   minY: number;
@@ -12,7 +14,7 @@ export interface IChartInfo {
   templateUrl: './chart.component.html',
   styleUrls: ['./chart.component.scss']
 })
-export class ChartComponent implements OnInit {
+export class ChartComponent implements OnInit, OnDestroy {
 
   public highcharts: typeof highcharts = highcharts;
   public chartOptions: highcharts.Options;
@@ -22,7 +24,7 @@ export class ChartComponent implements OnInit {
   @Input()
   public set threshold(value) {
     this.thresholdHolder = value;
-    this.updateChart();
+    this.updater$.next();
   }
   public get threshold() {
     return this.thresholdHolder;
@@ -32,17 +34,23 @@ export class ChartComponent implements OnInit {
   @Input()
   public set series(value) {
     this.seriesHolder = value;
-    this.updateChart();
+    this.updater$.next();
   }
   public get series() {
     return this.seriesHolder;
   }
 
+  private updater$ = new Subject();
   private chart: highcharts.Chart;
-
-  constructor() { }
+  private subscriptions: Subscription[] = [];
 
   ngOnInit() {
+    this.setupChart();
+    this.subscriptions.push(this.updater$.pipe(debounceTime(100)).subscribe(x => this.updateChart()));
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(x => x.unsubscribe());
   }
 
   private setupChart() {
@@ -58,9 +66,8 @@ export class ChartComponent implements OnInit {
       },
       yAxis: {
         title: {
-          text: 'Value'
-        },
-        plotLines: [this.getThresholdPlotLine()]
+          text: 'Price'
+        }
       } as highcharts.AxisOptions,
       series: this.getSeriesData()
     };
@@ -71,18 +78,37 @@ export class ChartComponent implements OnInit {
   }
 
   private updateChart() {
-    if (!this.chart) {
-      this.setupChart();
-    } else {
-      this.chart.update({
-        series: this.getSeriesData(),
-        yAxis: {
-          plotLines: [
-            this.getThresholdPlotLine()
-          ]
-        } as highcharts.AxisOptions
-      });
+    this.chart.update({
+      yAxis: {
+        plotLines: [
+          this.getThresholdPlotLine()
+        ]
+      } as highcharts.AxisOptions
+    });
+    this.updateSeries();
+  }
+
+  private updateSeries() {
+    // find series to remove
+    const series = this.getSeriesData();
+    const newSymbols = series.map(x => x.name);
+    const oldSymbols = this.chart.series.map(x => x.name);
+    const removeTargets = this.chart.series.filter(x => newSymbols.indexOf(x.name) < 0);
+    while (removeTargets.length) {
+      removeTargets[0].remove();
+      removeTargets.splice(0, 1);
     }
+
+    series.forEach(s => {
+      if (oldSymbols.indexOf(s.name) < 0) {
+        // add new series
+        this.chart.addSeries(s);
+      } else {
+        // update datapoints of existing
+        const updateTarget = this.chart.series.filter(x => x.name === s.name)[0];
+        updateTarget.update({ threshold: this.threshold, data: s.data } as highcharts.SeriesLineOptions)
+      }
+    });
   }
 
   private getThresholdPlotLine() {
@@ -93,10 +119,10 @@ export class ChartComponent implements OnInit {
       value: this.threshold,
       color: 'green',
       dashStyle: 'Dash',
-      width: 4,
+      width: 2,
       zIndex: 10000,
       label: {
-        text: 'Last quarter minimum'
+        text: 'Threshold line'
       }
     } as highcharts.PlotLineOptions;
   }
@@ -105,9 +131,9 @@ export class ChartComponent implements OnInit {
     if (!this.series) {
       return;
     }
-
-    const data = this.series.map((s, i) => {
+    const series = this.series.map((s, i) => {
       return {
+        id: s.symbol,
         name: s.symbol,
         type: 'line',
         negativeColor: '#cacaca',
@@ -120,6 +146,7 @@ export class ChartComponent implements OnInit {
         })
       } as highcharts.SeriesLineOptions;
     });
-    return data;
+
+    return series;
   }
 }
