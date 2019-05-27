@@ -21,7 +21,7 @@
         </div>
         <mat-slider [vertical]="true" [value]="threshold$ | async" (input)="updateThreshold($event.value)" [step]="step"
             [min]="minValue" [max]="maxValue"></mat-slider>
-        <app-chart class="flex-grow-1" (rendered)="initChartData($event)" [series]="series"
+        <app-chart class="flex-grow-1" [series]="series"
             [threshold]="threshold$ | async" [title]="chartTitle">
         </app-chart>
     </div>
