@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map } from 'rxjs/operators';
+import { map, catchError } from 'rxjs/operators';
 import { of, Observable } from 'rxjs';
+import { FeedbackService } from './feedback/feedback.service';
 
 export declare type PriceType = 'high' | 'low' | 'close' | 'open';
 
@@ -77,7 +78,8 @@ export class ApiService {
             });
           this.cache[key] = data;
           return data;
-        })
+        }),
+        catchError(err => { return of(null) })
       );
   }
 }

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Subject, Observable, forkJoin } from 'rxjs';
 import { debounceTime, map, concatMap } from 'rxjs/operators';
 import { ApiService, IStockData, ICompany, PriceType } from './api.service';
+import { FeedbackService } from './feedback/feedback.service';
 
 interface ISelectedCompany extends ICompany {
   selected?: boolean;
@@ -29,7 +30,7 @@ export class AppComponent {
 
   public series: IStockData[];
 
-  constructor(private apiService: ApiService) {
+  constructor(private apiService: ApiService, private feedbackService: FeedbackService) {
     this.init();
   }
 
@@ -71,6 +72,7 @@ export class AppComponent {
   private initDataObservable() {
     const obs = this.dataRequest$.pipe(
       concatMap(() => {
+        console.log(ggg);
         const arr = this.companies.filter(x => x.selected).map(x => x.symbol);
         const requests = arr.map(x => {
           return this.apiService.getStockData(x, this.selectedPriceType);
@@ -87,9 +89,12 @@ export class AppComponent {
             data: x[i]
           };
         });
-    })).subscribe(data => {
-      this.series = data;
-
+    })).subscribe(res => {
+      if (res.some(x => !x.data)) {
+        this.feedbackService.showError('Error fetching data from server', 'Make sure you you don\'t go over the API limit')
+        return;
+      }
+      this.series = res;
       this.setValues();
     });
   }

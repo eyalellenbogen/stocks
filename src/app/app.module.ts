@@ -7,15 +7,17 @@ import { ChartComponent } from './chart/chart.component';
 import { HighchartsChartModule } from 'highcharts-angular';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { MatSliderModule, MatRadioModule, MatCheckboxModule, MatFormFieldModule, MatSelectModule } from '@angular/material';
+import { MatSliderModule, MatRadioModule, MatCheckboxModule, MatFormFieldModule, MatSelectModule, MatDialogModule, MatButtonModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { ErrorFeedbackComponent } from './feedback/error-feedback/error-feedback.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    ChartComponent
+    ChartComponent,
+    ErrorFeedbackComponent
   ],
   imports: [
     BrowserModule,
@@ -27,9 +29,12 @@ import { FormsModule } from '@angular/forms';
     MatSliderModule,
     MatCheckboxModule,
     MatFormFieldModule,
-    MatSelectModule
+    MatSelectModule,
+    MatDialogModule,
+    MatButtonModule
   ],
   providers: [],
+  entryComponents: [ErrorFeedbackComponent],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
