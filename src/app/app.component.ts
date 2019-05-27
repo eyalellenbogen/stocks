@@ -28,6 +28,8 @@ export class AppComponent {
   public priceTypes: PriceType[];
   public selectedPriceType: PriceType;
 
+  public chartTitle: string;
+
   public series: IStockData[];
 
   constructor(private apiService: ApiService, private feedbackService: FeedbackService) {
@@ -70,7 +72,29 @@ export class AppComponent {
   }
 
   private initDataObservable() {
-    const obs = this.dataRequest$.pipe(
+    this.getRequestObservable()
+      .pipe(map(x => {
+        return this.companies
+          .filter(c => c.selected)
+          .map((d, i) => {
+            return {
+              symbol: d.symbol,
+              data: x[i]
+            };
+          });
+      })).subscribe(res => {
+        if (res.some(x => !x.data)) {
+          this.feedbackService.showError('Error fetching data from server', 'Make sure you you don\'t go over the API limit')
+          return;
+        }
+        this.series = res;
+        this.setValues();
+      });
+  }
+
+  private getRequestObservable() {
+    // call all http requests when triggered and forkjoin the responses
+    return this.dataRequest$.pipe(
       concatMap(() => {
         const arr = this.companies.filter(x => x.selected).map(x => x.symbol);
         const requests = arr.map(x => {
@@ -78,30 +102,14 @@ export class AppComponent {
         });
         return forkJoin(requests);
       }));
-
-    obs.pipe(map(x => {
-      return this.companies
-        .filter(c => c.selected)
-        .map((d, i) => {
-          return {
-            symbol: d.symbol,
-            data: x[i]
-          };
-        });
-    })).subscribe(res => {
-      if (res.some(x => !x.data)) {
-        this.feedbackService.showError('Error fetching data from server', 'Make sure you you don\'t go over the API limit')
-        return;
-      }
-      this.series = res;
-      this.setValues();
-    });
   }
 
   private setValues() {
     this.setMinAndMaxValues();
     this.setStep();
     this.updateThreshold(this.minValue + (this.maxValue - this.minValue) / 2);
+
+    this.chartTitle = `Stock Prices (${this.selectedPriceType})`;
   }
 
   private initThresholdObservable() {

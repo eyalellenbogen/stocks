@@ -79,7 +79,7 @@ export class ApiService {
           this.cache[key] = data;
           return data;
         }),
-        catchError(err => { return of(null) })
+        catchError(err => of(null))
       );
   }
 }

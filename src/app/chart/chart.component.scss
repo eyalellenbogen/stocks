@@ -1,3 +1,9 @@
-:host{
-    box-shadow: 4px 4px 6px #aaa;
+:host {
+  box-shadow: 4px 4px 6px #aaa;
+}
+
+.chart-holder {
+  width: 100%;
+  height: 400px;
+  display: block;
 }
