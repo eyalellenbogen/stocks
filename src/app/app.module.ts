@@ -7,7 +7,15 @@ import { ChartComponent } from './chart/chart.component';
 import { HighchartsChartModule } from 'highcharts-angular';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { MatSliderModule, MatRadioModule, MatCheckboxModule, MatFormFieldModule, MatSelectModule, MatDialogModule, MatButtonModule } from '@angular/material';
+import {
+  MatSliderModule,
+  MatCheckboxModule,
+  MatFormFieldModule,
+  MatSelectModule,
+  MatDialogModule,
+  MatButtonModule,
+  MatIconModule
+} from '@angular/material';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
@@ -31,7 +39,8 @@ import { ErrorFeedbackComponent } from './feedback/error-feedback/error-feedback
     MatFormFieldModule,
     MatSelectModule,
     MatDialogModule,
-    MatButtonModule
+    MatButtonModule,
+    MatIconModule
   ],
   providers: [],
   entryComponents: [ErrorFeedbackComponent],
