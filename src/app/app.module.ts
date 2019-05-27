@@ -14,18 +14,20 @@ import {
   MatSelectModule,
   MatDialogModule,
   MatButtonModule,
-  MatIconModule
+  MatIconModule,
 } from '@angular/material';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { ErrorFeedbackComponent } from './feedback/error-feedback/error-feedback.component';
+import { HelpFeedbackComponent } from './feedback/help-feedback/help-feedback.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     ChartComponent,
-    ErrorFeedbackComponent
+    ErrorFeedbackComponent,
+    HelpFeedbackComponent
   ],
   imports: [
     BrowserModule,
@@ -43,7 +45,7 @@ import { ErrorFeedbackComponent } from './feedback/error-feedback/error-feedback
     MatIconModule
   ],
   providers: [],
-  entryComponents: [ErrorFeedbackComponent],
+  entryComponents: [ErrorFeedbackComponent, HelpFeedbackComponent],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

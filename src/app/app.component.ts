@@ -44,6 +44,10 @@ export class AppComponent {
     this.rawThreshold$.next(value);
   }
 
+  public showHelp() {
+    this.feedbackService.showHelp();
+  }
+
   private init() {
     this.initThresholdObservable();
     this.initCompaniesObservable();
