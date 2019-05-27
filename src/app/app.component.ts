@@ -72,7 +72,6 @@ export class AppComponent {
   private initDataObservable() {
     const obs = this.dataRequest$.pipe(
       concatMap(() => {
-        console.log(ggg);
         const arr = this.companies.filter(x => x.selected).map(x => x.symbol);
         const requests = arr.map(x => {
           return this.apiService.getStockData(x, this.selectedPriceType);
