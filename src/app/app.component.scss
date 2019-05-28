@@ -8,6 +8,28 @@
     margin: 0;
     line-height: 60px;
     font-size: 30px;
+    letter-spacing: .06em;
+    font-weight: 900;
+  }
+
+  &__title-icon {
+    $iconSize: 40px;
+    font-size: $iconSize;
+    width: $iconSize;
+    height: $iconSize;
+    position: relative;
+    display: inline-block;
+    top: 10px;
+    margin-right: 10px;
+  }
+
+  &__title-pre {
+    font-weight: 300;
+  }
+
+  &__title-post {
+    font-size: 17px;
+    font-weight: 300;
   }
 
 }
@@ -33,10 +55,18 @@
     padding: 0;
     font-size: 26px;
     color: $primary;
+
   }
 
   &__value {
     display: block;
     margin-top: 10px;
   }
+}
+
+.help-panel {
+  margin-top: 40px;
+  border-top: 1px solid #cacaca;
+  padding-top: 40px;
+  text-align: center;
 }

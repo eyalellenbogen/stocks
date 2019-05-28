@@ -1,7 +1,9 @@
 <div class="top-bar">
     <div class="container">
+
         <h1 class="top-bar__title">
-            STOCKS
+            <mat-icon class=" top-bar__title-icon">language</mat-icon>
+            <span class="top-bar__title-pre">TECH</span>STOCKS<span class="top-bar__title-post">.app</span>
         </h1>
     </div>
 </div>
@@ -19,8 +21,7 @@
         </div>
         <mat-slider [vertical]="true" [value]="threshold$ | async" (input)="updateThreshold($event.value)" [step]="step"
             [min]="minValue" [max]="maxValue"></mat-slider>
-        <app-chart class="flex-grow-1" (rendered)="initChartData($event)" [series]="series"
-            [threshold]="threshold$ | async">
+        <app-chart class="flex-grow-1" [series]="series" [threshold]="threshold$ | async" [title]="chartTitle">
         </app-chart>
     </div>
     <div class="d-flex flex-row justify-content-between align-items-center mt-4">
@@ -38,5 +39,11 @@
                 </mat-select>
             </mat-form-field>
         </div>
+    </div>
+    <div class="help-panel">
+        <h6>
+            Got questions?
+        </h6>
+        <button mat-button color="primary" (click)="showHelp()">Click me!</button>
     </div>
 </div>

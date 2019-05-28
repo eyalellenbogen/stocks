@@ -15,6 +15,9 @@ export class ChartComponent implements OnInit, OnDestroy {
   public chartOptions: highcharts.Options;
   public initChartHandler = this.initChart.bind(this);
 
+  @Input()
+  public title: string;
+
   private thresholdHolder: number;
   @Input()
   public set threshold(value) {
@@ -51,7 +54,7 @@ export class ChartComponent implements OnInit, OnDestroy {
   private setupChart() {
     this.chartOptions = {
       title: {
-        text: ''
+        text: this.title
       },
       chart: {
         zoomType: 'xy',
@@ -74,6 +77,9 @@ export class ChartComponent implements OnInit, OnDestroy {
 
   private updateChart() {
     this.chart.update({
+      title: {
+        text: this.title
+      },
       yAxis: {
         plotLines: [
           this.getThresholdPlotLine()

@@ -1,0 +1,22 @@
+<h1 mat-dialog-title>Hi!</h1>
+<div mat-dialog-content>
+  <p>
+    Welcome to <strong>TechStocks</strong>.
+    <br>This app allows you to view stock price information for 5 big tech companies. Feel
+    free to click some buttons.
+  </p>
+  <h6>Zooming</h6>
+  <p>
+    You can zoom in by selecting an area on the graph.
+  </p>
+  <h6>Errors</h6>
+  <p>
+    To see the error modal make more than 5 requests to the server within one minute. If you can't reach the
+    limit, try refreshing the page because the app caches requests. Once you do that, the API key I used
+    will
+    reach its rate limit and an error message will appear.
+  </p>
+</div>
+<div mat-dialog-actions class="d-flex flex-row justify-content-end">
+  <button mat-raised-button color="primary" (click)="dismiss()">Got it!</button>
+</div>
