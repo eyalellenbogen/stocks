@@ -2,24 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, catchError } from 'rxjs/operators';
 import { of, Observable } from 'rxjs';
-import { FeedbackService } from './feedback/feedback.service';
-
-export declare type PriceType = 'high' | 'low' | 'close' | 'open';
-
-export interface IStockItem {
-  date: Date;
-  value: number;
-}
-
-export interface IStockData {
-  symbol: string;
-  data: IStockItem[];
-}
-
-export interface ICompany {
-  name: string;
-  symbol: string;
-}
+import { IStockItem, ICompany, PriceType } from './types';
 
 @Injectable({
   providedIn: 'root'

@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { Subject, Observable, forkJoin } from 'rxjs';
 import { debounceTime, map, concatMap } from 'rxjs/operators';
-import { ApiService, IStockData, ICompany, PriceType } from './api.service';
+import { ApiService } from './api.service';
 import { FeedbackService } from './feedback/feedback.service';
+import { ICompany, PriceType, IStockData } from './types';
 
 interface ISelectedCompany extends ICompany {
   selected?: boolean;

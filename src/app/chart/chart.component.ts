@@ -1,13 +1,8 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import * as highcharts from 'highcharts';
-import { IStockData } from '../api.service';
 import { Subscription, Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-
-export interface IChartInfo {
-  minY: number;
-  maxY: number;
-}
+import { IStockData } from '../types';
 
 @Component({
   selector: 'app-chart',
